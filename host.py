@@ -46,11 +46,11 @@ TOKEN_DATA = {}
 def execute_query(query: str) -> str:
     try:
         conn = psycopg2.connect(
-            dbname="prod_phg_m18aK1",
-            user="postgres",
-            password="vPTkT/agjwOYMp1grS3NSA",
-            host="10.20.1.64",
-            port="5432",
+            dbname=os.getenv("POSTGRES_DB"),
+            user=os.getenv("POSTGRES_USER"),
+            password=os.getenv("POSTGRES_PASSWORD"),
+            host=os.getenv("POSTGRES_HOST"),
+            port=os.getenv("POSTGRES_PORT", "5432"),
             options='-c client_encoding=UTF8'
         )
 
