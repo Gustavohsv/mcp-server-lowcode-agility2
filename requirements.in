@@ -1,4 +1,5 @@
 fastmcp
+requests
 openai
 psycopg2
 python-dotenv

@@ -1,333 +1,296 @@
-# from fastmcp import FastMCP
-# import json
-
-# # =====================================================
-# # IMPORTS DOS MCPs ESPECIALIZADOS
-# # =====================================================
-# from fs_server import list_downloads, find_in_downloads
-# from db_server import query_postgres   # precisa existir em db_server.py
-# from client import client, send_message_to_client  # usa o client pronto com API key
-
-# # =====================================================
-# # MCP PRINCIPAL (ORQUESTRADOR)
-# # =====================================================
-# mcp = FastMCP("mcp-host")
-
-# # =====================================================
-# # TOOLS DIRETAS (EXPOSTAS NO INSPECTOR)
-# # =====================================================
-# @mcp.tool()
-# def list_downloads_proxy() -> str:
-#     """Lista arquivos do diretório em Markdown"""
-#     return list_downloads()
-
-# @mcp.tool()
-# def find_in_downloads_proxy(filename: str) -> str:
-#     """Busca um arquivo específico em Markdown"""
-#     return find_in_downloads(filename)
-
-# @mcp.tool()
-# def query_postgres_proxy(query: str) -> str:
-#     """Executa SELECT no Postgres e retorna Markdown"""
-#     return query_postgres(query)
-
-# @mcp.tool()
-# def send_message_proxy(message: str) -> str:
-#     """Envia mensagem ao client"""
-#     return send_message_to_client(message)
-
-# # =====================================================
-# # ROUTER NLU (OPENAI → ORQUESTRAÇÃO MCP)
-# # =====================================================
-# @mcp.tool()
-# def route_request(message: str) -> str:
-#     """
-#     Interpreta linguagem natural e decide qual MCP usar.
-#     Retorna SEMPRE Markdown.
-#     """
-
-#     prompt = f"""
-# Você é um roteador MCP.
-
-# A partir da mensagem do usuário, escolha UMA ação
-# e responda SOMENTE um JSON válido no formato:
-
-# {{
-#   "intent": "<nome_da_tool>",
-#   "content": "<parametro>"
-# }}
-
-# Ferramentas disponíveis:
-
-# 1. list_downloads_proxy
-# 2. find_in_downloads_proxy
-# 3. query_postgres_proxy
-# 4. send_message_proxy
-
-# ⚠️ IMPORTANTE:
-# - Se a intenção for "query_postgres_proxy", o campo "content" deve conter
-#   uma query SQL **válida para PostgreSQL** (NUNCA usar sintaxe MySQL).
-# - Para listar tabelas, use:
-#   SELECT table_name FROM information_schema.tables WHERE table_schema='public';
-
-# Usuário: "{message}"
-# """
-
-#     try:
-#         completion = client.chat.completions.create(
-#             model="gpt-4o-mini",  # ou "gpt-4" se disponível
-#             messages=[{"role": "user", "content": prompt}],
-#             temperature=0
-#         )
-
-#         parsed = json.loads(completion.choices[0].message.content.strip())
-#         intent = parsed.get("intent")
-#         content = parsed.get("content", "")
-
-#     except Exception as e:
-#         return f"## Erro de NLU: {str(e)}"
-
-#     # =================================================
-#     # ORQUESTRAÇÃO MCP
-#     # =================================================
-#     if intent == "list_downloads_proxy":
-#         return list_downloads()
-
-#     if intent == "find_in_downloads_proxy":
-#         return find_in_downloads(content)
-
-#     if intent == "query_postgres_proxy":
-#         return query_postgres(content)
-
-#     if intent == "send_message_proxy":
-#         return send_message_to_client(content)
-
-#     return f"## Intenção não reconhecida: {intent}"
-
-# # =====================================================
-# # START (STDIO LIMPO — NÃO USAR PRINT)
-# # =====================================================
-# if __name__ == "__main__":
-#     mcp.run()
-# from fastmcp import FastMCP
-# import json
-
-# # =====================================================
-# # IMPORTS DOS MCPs ESPECIALIZADOS
-# # =====================================================
-# from fs_server import list_downloads, find_in_downloads
-# from db_server import query_postgres   # precisa existir em db_server.py
-# from client import client, send_message_to_client  # usa o client pronto com API key
-
-# # =====================================================
-# # MCP PRINCIPAL (ORQUESTRADOR)
-# # =====================================================
-# mcp = FastMCP("mcp-host")
-
-# # =====================================================
-# # TOOLS DIRETAS (EXPOSTAS NO INSPECTOR)
-# # =====================================================
-# @mcp.tool()
-# def list_downloads_proxy() -> str:
-#     """Lista arquivos do diretório em Markdown"""
-#     return list_downloads()
-
-# @mcp.tool()
-# def find_in_downloads_proxy(filename: str) -> str:
-#     """Busca um arquivo específico em Markdown"""
-#     return find_in_downloads(filename)
-
-# @mcp.tool()
-# def query_postgres_proxy(query: str) -> str:
-#     """Executa SELECT no Postgres e retorna Markdown"""
-#     return query_postgres(query)
-
-# @mcp.tool()
-# def send_message_proxy(message: str) -> str:
-#     """Envia mensagem ao client"""
-#     return send_message_to_client(message)
-
-# # =====================================================
-# # ROUTER NLU (OPENAI → ORQUESTRAÇÃO MCP)
-# # =====================================================
-# @mcp.tool()
-# def route_request(message: str) -> str:
-#     """
-#     Interpreta linguagem natural e decide qual MCP usar.
-#     Retorna SEMPRE Markdown.
-#     """
-
-#     prompt = f"""
-# Você é um roteador MCP.
-
-# A partir da mensagem do usuário, escolha UMA ação
-# e responda SOMENTE um JSON válido no formato:
-
-# {{
-#   "intent": "<nome_da_tool>",
-#   "content": "<parametro>"
-# }}
-
-# Ferramentas disponíveis:
-
-# 1. list_downloads_proxy
-# 2. find_in_downloads_proxy
-# 3. query_postgres_proxy
-# 4. send_message_proxy
-
-# ⚠️ IMPORTANTE:
-# - Se a intenção for "query_postgres_proxy", o campo "content" deve conter
-#   uma query SQL **válida para PostgreSQL** (NUNCA usar sintaxe MySQL).
-# - Para listar tabelas, use:
-#   SELECT table_name FROM information_schema.tables WHERE table_schema='public';
-
-# Usuário: "{message}"
-# """
-
-#     try:
-#         completion = client.chat.completions.create(
-#             model="gpt-4o-mini",  # ou "gpt-4" se disponível
-#             messages=[{"role": "user", "content": prompt}],
-#             temperature=0
-#         )
-
-#         parsed = json.loads(completion.choices[0].message.content.strip())
-#         intent = parsed.get("intent")
-#         content = parsed.get("content", "")
-
-#     except Exception as e:
-#         return f"## Erro de NLU: {str(e)}"
-
-#     # =================================================
-#     # ORQUESTRAÇÃO MCP
-#     # =================================================
-#     if intent == "list_downloads_proxy":
-#         return list_downloads()
-
-#     if intent == "find_in_downloads_proxy":
-#         return find_in_downloads(content)
-
-#     if intent == "query_postgres_proxy":
-#         return query_postgres(content)
-
-#     if intent == "send_message_proxy":
-#         return send_message_to_client(content)
-
-#     return f"## Intenção não reconhecida: {intent}"
-
-# # =====================================================
-# # START (STDIO LIMPO — NÃO USAR PRINT)
-# # =====================================================
-# if __name__ == "__main__":
-#     mcp.run()
 from fastmcp import FastMCP
+from openai import OpenAI
+import psycopg2
 import json
+import os
+import base64
+import hashlib
+import secrets
+import threading
+import webbrowser
+import requests
+import time
+from flask import Flask, request as flask_request
+from urllib.parse import urlencode
+from dotenv import load_dotenv
 
-# =====================================================
-# IMPORTS DOS MCPs ESPECIALIZADOS
-# =====================================================
-from fs_server import list_downloads, find_in_downloads
-from db_server import query_postgres   # precisa existir em db_server.py e retornar Markdown
-from client import client, send_message_to_client  # usa o client pronto com API key
 
-# =====================================================
-# MCP PRINCIPAL (ORQUESTRADOR)
-# =====================================================
+# ======================================================
+# LOAD ENV
+# ======================================================
+
+load_dotenv()
+
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "front-manager")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+OAUTH2_AUTH_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/auth"
+OAUTH2_TOKEN_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/token"
+REDIRECT_URI = "http://localhost:5005/callback"
+SWAGGER_JSON_URL = "https://itsmx-dev.centralit.com.br/lowcode/v2/api-docs"
+
+
+# ======================================================
+# INICIALIZAÇÕES
+# ======================================================
+
 mcp = FastMCP("mcp-host")
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+TOKEN_DATA = {}
 
-# =====================================================
-# TOOLS DIRETAS (EXPOSTAS NO INSPECTOR)
-# =====================================================
-@mcp.tool()
-def list_downloads_proxy() -> str:
-    """Lista arquivos do diretório em Markdown"""
-    return list_downloads()
 
-@mcp.tool()
-def find_in_downloads_proxy(filename: str) -> str:
-    """Busca um arquivo específico em Markdown"""
-    return find_in_downloads(filename)
+# ======================================================
+# POSTGRES
+# ======================================================
 
-@mcp.tool()
-def query_postgres_proxy(query: str) -> str:
-    """Executa SELECT no Postgres e retorna Markdown"""
-    return query_postgres(query)
+def execute_query(query: str) -> str:
+    try:
+        conn = psycopg2.connect(
+            dbname="prod_phg_m18aK1",
+            user="postgres",
+            password="vPTkT/agjwOYMp1grS3NSA",
+            host="10.20.1.64",
+            port="5432",
+            options='-c client_encoding=UTF8'
+        )
 
-@mcp.tool()
-def send_message_proxy(message: str) -> str:
-    """Envia mensagem ao client"""
-    return send_message_to_client(message)
+        cur = conn.cursor()
+        cur.execute(query)
 
-# =====================================================
-# ROUTER NLU (OPENAI → ORQUESTRAÇÃO MCP)
-# =====================================================
+        if cur.description:
+            rows = cur.fetchall()
+            result = json.dumps(rows, ensure_ascii=False, default=str)
+        else:
+            conn.commit()
+            result = "Comando executado com sucesso."
+
+        cur.close()
+        conn.close()
+
+        return result
+
+    except Exception as e:
+        return f"Erro ao executar consulta: {str(e)}"
+
+
+# ======================================================
+# PKCE AUTH
+# ======================================================
+
+def _generate_pkce_pair():
+    code_verifier = base64.urlsafe_b64encode(secrets.token_bytes(32)).rstrip(b'=').decode()
+    code_challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(code_verifier.encode()).digest()
+    ).rstrip(b'=').decode()
+    return code_verifier, code_challenge
+
+
+def get_bearer_token_pkce():
+    global TOKEN_DATA
+
+    if TOKEN_DATA.get("access_token") and time.time() < TOKEN_DATA.get("expires_at", 0):
+        return TOKEN_DATA["access_token"]
+
+    code_verifier, code_challenge = _generate_pkce_pair()
+    state = secrets.token_urlsafe(16)
+
+    params = {
+        "client_id": CLIENT_ID,
+        "redirect_uri": REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid offline_access",
+        "state": state,
+        "code_challenge": code_challenge,
+        "code_challenge_method": "S256"
+    }
+
+    url = f"{OAUTH2_AUTH_URL}?{urlencode(params)}"
+
+    app = Flask(__name__)
+    auth_code_holder = {}
+
+    @app.route("/callback")
+    def callback():
+        auth_code_holder["code"] = flask_request.args.get("code")
+        return "Login realizado! Pode fechar."
+
+    def run_flask():
+        app.run(port=5005, debug=False, use_reloader=False)
+
+    threading.Thread(target=run_flask, daemon=True).start()
+
+    webbrowser.open(url)
+
+    for _ in range(120):
+        if "code" in auth_code_holder:
+            break
+        time.sleep(1)
+    else:
+        raise Exception("Timeout esperando código.")
+
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": CLIENT_ID,
+        "code": auth_code_holder["code"],
+        "redirect_uri": REDIRECT_URI,
+        "code_verifier": code_verifier
+    }
+
+    resp = requests.post(OAUTH2_TOKEN_URL, data=data)
+
+    if resp.status_code != 200:
+        raise Exception(resp.text)
+
+    token_data = resp.json()
+
+    TOKEN_DATA["access_token"] = token_data["access_token"]
+    TOKEN_DATA["expires_at"] = time.time() + token_data["expires_in"]
+
+    return TOKEN_DATA["access_token"]
+
+
+# ======================================================
+# SWAGGER
+# ======================================================
+
+def get_swagger_json():
+    token = get_bearer_token_pkce()
+    headers = {"Authorization": f"Bearer {token}"}
+
+    resp = requests.get(SWAGGER_JSON_URL, headers=headers)
+
+    if resp.status_code != 200:
+        return {"error": f"Erro ao acessar Swagger: {resp.status_code}", "detail": resp.text}
+
+    return resp.json()
+
+
+# ======================================================
+# TOOL 1 - POSTGRES
+# ======================================================
+
 @mcp.tool()
 def route_request(message: str) -> str:
     """
-    Interpreta linguagem natural e decide qual MCP usar.
-    Retorna SEMPRE Markdown.
+    Interpreta linguagem natural e gera SQL automaticamente.
     """
 
     prompt = f"""
-Você é um roteador MCP.
+Você é um especialista em PostgreSQL.
 
-A partir da mensagem do usuário, escolha UMA ação
-e responda SOMENTE um JSON válido no formato:
+Converta a frase abaixo em um comando SQL válido.
+Retorne APENAS o SQL puro.
+Nunca use markdown.
+Nunca use ```sql.
+Nunca explique nada.
 
-{{
-  "intent": "<nome_da_tool>",
-  "content": "<parametro>"
-}}
-
-Ferramentas disponíveis:
-
-1. list_downloads_proxy
-2. find_in_downloads_proxy
-3. query_postgres_proxy
-4. send_message_proxy
-
-⚠️ IMPORTANTE:
-- Se a intenção for "query_postgres_proxy", o campo "content" deve conter
-  uma query SQL **válida para PostgreSQL** (NUNCA usar sintaxe MySQL).
-- Para listar tabelas, use:
-  SELECT table_name FROM information_schema.tables WHERE table_schema='public';
-
-Usuário: "{message}"
+Frase:
+{message}
 """
 
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",  # ou "gpt-4" se disponível
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0
+    completion = openai_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Você gera SQL puro para PostgreSQL."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    sql = completion.choices[0].message.content.strip()
+
+    # 🔥 Remove markdown se vier
+    sql = sql.replace("```sql", "").replace("```", "").strip()
+
+    # 🔐 Segurança: permitir apenas SELECT
+    if not sql.lower().startswith("select"):
+        return f"Consulta bloqueada por segurança. SQL gerado: {sql}"
+
+    return execute_query(sql)
+
+
+
+
+# ======================================================
+# TOOL 2 - SWAGGER API
+# ======================================================
+
+@mcp.tool()
+def swagger_api(action: str, path: str = "", method: str = "GET"):
+    """
+    action:
+        - "list" → lista endpoints do Swagger
+        - "call" → chama endpoint específico
+
+    path:
+        obrigatório quando action="call"
+
+    method:
+        GET, POST, PUT, DELETE...
+    """
+
+    swagger = get_swagger_json()
+
+    if "error" in swagger:
+        return swagger
+
+    # LISTAR ENDPOINTS
+    if action == "list":
+        endpoints = []
+
+        for route, methods in swagger.get("paths", {}).items():
+            for m in methods.keys():
+                endpoints.append({
+                    "path": route,
+                    "method": m.upper()
+                })
+
+        return {"endpoints": endpoints}
+
+    # CHAMAR ENDPOINT
+    if action == "call":
+
+        if not path:
+            return {"error": "Path é obrigatório quando action='call'"}
+
+        BASE_URL = "https://itsmx-dev.centralit.com.br/lowcode"
+
+        token = get_bearer_token_pkce()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+
+        full_url = f"{BASE_URL}/{path.lstrip('/')}"
+
+        response = requests.request(
+            method.upper(),
+            full_url,
+            headers=headers
         )
 
-        parsed = json.loads(completion.choices[0].message.content.strip())
-        intent = parsed.get("intent")
-        content = parsed.get("content", "")
+        try:
+            data = response.json()
+        except Exception:
+            data = response.text
 
-    except Exception as e:
-        return f"## Erro de NLU: {str(e)}"
+        return {
+            "status": response.status_code,
+            "url": full_url,
+            "data": data
+        }
 
-    # =================================================
-    # ORQUESTRAÇÃO MCP
-    # =================================================
-    if intent == "list_downloads_proxy":
-        return list_downloads()
+    return {"error": "Ação inválida. Use 'list' ou 'call'."}
 
-    if intent == "find_in_downloads_proxy":
-        return find_in_downloads(content)
 
-    if intent == "query_postgres_proxy":
-        return query_postgres(content)
 
-    if intent == "send_message_proxy":
-        return send_message_to_client(content)
+# ======================================================
+# START SERVER
+# ======================================================
 
-    return f"## Intenção não reconhecida: {intent}"
-
-# =====================================================
-# START (STDIO LIMPO — NÃO USAR PRINT)
-# =====================================================
 if __name__ == "__main__":
     mcp.run()
+
+
+
+
+
