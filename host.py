@@ -15,6 +15,7 @@ from urllib.parse import urlencode
 from dotenv import load_dotenv
 
 
+
 # ======================================================
 # LOAD ENV
 # ======================================================
@@ -24,11 +25,10 @@ load_dotenv()
 CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "front-manager")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-OAUTH2_AUTH_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/auth"
-OAUTH2_TOKEN_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/token"
-REDIRECT_URI = "http://localhost:5005/callback"
-SWAGGER_JSON_URL = "https://itsmx-dev.centralit.com.br/lowcode/v2/api-docs"
-
+OAUTH2_AUTH_URL = os.getenv("OAUTH2_AUTH_URL")
+OAUTH2_TOKEN_URL = os.getenv("OAUTH2_TOKEN_URL")
+REDIRECT_URI = os.getenv("REDIRECT_URI")
+SWAGGER_JSON_URL = os.getenv("SWAGGER_JSON_URL")
 
 # ======================================================
 # INICIALIZAÇÕES
@@ -280,6 +280,7 @@ def swagger_api(action: str, path: str = "", method: str = "GET"):
         }
 
     return {"error": "Ação inválida. Use 'list' ou 'call'."}
+
 
 
 
