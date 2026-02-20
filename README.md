@@ -87,3 +87,16 @@ swagger_api("call", path="v2/usuarios", method="GET")
 - [Keycloak PKCE](https://www.keycloak.org/docs/latest/securing_apps/#_pkce)
 - [psycopg2](https://www.psycopg.org/)
 
+
+## CRIAR O .ENV
+OPENAI_API_KEY=sk-
+POSTGRES_PASSWORD=your_postgres_password
+KEYCLOAK_CLIENT_ID=front-manager
+POSTGRES_DB=prod_phg_m18aK1
+POSTGRES_USER=postgres
+POSTGRES_HOST=10.20.1.64
+POSTGRES_PORT=5432
+OAUTH2_AUTH_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/auth"
+OAUTH2_TOKEN_URL = "https://auth-dev.centralit.com.br/realms/central-prd/protocol/openid-connect/token"
+REDIRECT_URI = "http://localhost:5005/callback"
+SWAGGER_JSON_URL = "https://itsmx-dev.centralit.com.br/lowcode/v2/api-docs"
